@@ -27,13 +27,25 @@ struct Cli {
 
     /// Specify the number of elements.
     #[arg(short = 'n', long,
-        default_value_t = 25,
+        default_value_t = 20,
     )]
-    n: usize,
+    number_of_elements: usize,
+
+    /// Specify the value of the gravitational constant G.
+    #[arg(short = 'G', long,
+        default_value_t = 6.6743e-11,
+    )]
+    grav_const: f64,
+
+    /// Specify the number of samples used for plotting
+    #[arg(short = 's', long,
+        default_value_t = 1000,
+    )]
+    sampling: usize,
 
     /// Do not output output a plot.
-    #[arg(short = 's', long)]
-    skip_plot: bool,
+    #[arg(short = 'p', long)]
+    plot_skip: bool,
 
     /// Print license
     #[arg(short = 'L', long)]
@@ -48,25 +60,26 @@ pub fn process_args() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
-    let n = cli.n;
+    let n = cli.number_of_elements;
 
     let bilins = phi_bilinear_matrix(n);
-    let lins = phi_linear_matrix(n);
+    let lins = phi_linear_matrix(n, cli.grav_const);
 
-    println!("B matrix:\n{}", bilins);
-    println!("L matrix:\n{}", lins);
+    println!("B matrix:\n{:#}", bilins);
+    println!("L matrix:\n{:#}", lins);
 
     let phi_ext = solve_for_phi_ext(&bilins, &lins);
-    println!("W matrix:\n{}", phi_ext);
+    println!("W matrix:\n{:#}", phi_ext);
 
     let phi = construct_phi(&phi_ext, n);
 
-    if !cli.skip_plot {
-        plot_phi_into_file(phi, &cli.output)?;
+    if !cli.plot_skip {
+        plot_phi_into_file(phi, &cli.output, cli.sampling)?;
     }
 
     Ok(())
 }
+
 
 fn print_license() {
     const LICENSE: &str =

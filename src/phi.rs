@@ -1,32 +1,35 @@
-use std::f64::consts::PI;
+use std::f64::{consts::PI, INFINITY, NEG_INFINITY};
 
 use ndarray::prelude::*;
 use ndarray_linalg::Solve;
 
 use plotters::prelude::*;
 
-const G: f64 = 6.6743e-11;
-
-pub fn plot_phi_into_file<F>(phi: F, filename: &str) -> Result<(), Box<dyn std::error::Error>> 
+pub fn plot_phi_into_file<F>(phi: F, filename: &str, sample_n: usize) -> Result<(), Box<dyn std::error::Error>> 
 where
     F: Fn(f64) -> f64
 {
+    let domain = (0..=sample_n).map(|x| 3. * (x as f64) / (sample_n as f64));
+    let phi_vector = domain.map(|x| (x, phi(x)));
+
+    let (miny, maxy) = phi_vector
+        .clone()
+        .fold((INFINITY, NEG_INFINITY),|(miny, maxy), (_, y)| (miny.min(y), maxy.max(y)));
+
     let root = BitMapBackend::new(filename, (640, 480)).into_drawing_area();
     root.fill(&WHITE)?;
     let mut chart = ChartBuilder::on(&root)
-        .caption("y=φ(x)", ("sans-serif", 50).into_font())
+        .caption("y=φ(x)", ("sans-serif", 24).into_font())
         .margin(5)
         .x_label_area_size(30)
         .y_label_area_size(30)
-        .build_cartesian_2d(0f64..3f64, 4f64..5f64)?;
+        .build_cartesian_2d(0f64..3f64, miny..maxy)?;
 
     chart.configure_mesh().draw()?;
 
     chart
         .draw_series(LineSeries::new(
-            (0..=1000)
-                .map(|x| 3. * x as f64 / 1000 as f64)
-                .map(|x| (x, phi(x))),
+            phi_vector,
             &RED,
         ))?;
 
@@ -70,7 +73,7 @@ pub fn phi_bilinear_matrix(n: usize) -> Array2<f64> {
     matrix
 }
 
-pub fn phi_linear_matrix(n: usize) -> Array1<f64> {
+pub fn phi_linear_matrix(n: usize, grav_const: f64) -> Array1<f64> {
     let mut matrix = Array1::<f64>::zeros(n - 1);
     let h: f64 = 3.0 / n as f64;
 
@@ -84,8 +87,8 @@ pub fn phi_linear_matrix(n: usize) -> Array1<f64> {
         }
 
         matrix[i - 1] =
-            4. * PI * G * linear_functional(|x| e(i, x, h), (x_i - h).max(1.), (x_i + h).min(2.))
-                - (e(i, x_i - h, h) - e(i, x_i + h, h)) / 3.
+            - 4. * PI * grav_const * linear_functional(|x| e(i, x, h), (x_i - h).max(1.), (x_i + h).min(2.))
+                + (e(i, x_i - h, h) - e(i, x_i + h, h)) / 3.
     }
     matrix
 }
@@ -96,8 +99,8 @@ pub fn solve_for_phi_ext(bilinear_matrix: &Array2<f64>, linear_matrix: &Array1<f
 
 pub fn construct_phi(phi_ext: &Array1<f64>, n: usize) -> impl Fn(f64) -> f64 + '_ {
     move |x| {
-        (1..n).fold(0., |acc, i|  acc + phi_ext[i - 1] * e(i, x, 3. / n as f64))
-        + 5. - x / 3.
+        5. - (x / 3.) 
+        + (1..n).fold(0., |acc, i|  acc + phi_ext[i - 1] * e(i, x, 3. / n as f64))
     }
 }
 
@@ -105,9 +108,9 @@ pub fn construct_phi(phi_ext: &Array1<f64>, n: usize) -> impl Fn(f64) -> f64 + '
 fn e(k: usize, x: f64, h: f64) -> f64 {
     let x_k = k as f64 * h;
 
-    if x > x_k - h && x < x_k {
+    if x >= x_k - h && x <= x_k {
         x / h - (k - 1) as f64
-    } else if x > x_k && x < x_k + h {
+    } else if x > x_k && x <= x_k + h {
         -x / h + (k + 1) as f64
     } else {
         0.
@@ -118,9 +121,9 @@ fn e(k: usize, x: f64, h: f64) -> f64 {
 fn de(k: usize, x: f64, h: f64) -> f64 {
     let x_k = k as f64 * h;
 
-    if x > x_k - h && x < x_k {
+    if x >= x_k - h && x <= x_k {
         1. / h
-    } else if x > x_k && x < x_k + h {
+    } else if x > x_k && x <= x_k + h {
         -1. / h
     } else {
         0.
