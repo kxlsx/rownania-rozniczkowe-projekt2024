@@ -3,6 +3,7 @@ use clap::Parser;
 use crate::phi::*;
 
 // TODO: nice error values for invalid filenames.
+// TODO: nicer matrix printing
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -30,6 +31,10 @@ struct Cli {
     )]
     n: usize,
 
+    /// Do not output output a plot.
+    #[arg(short = 's', long)]
+    skip_plot: bool,
+
     /// Print license
     #[arg(short = 'L', long)]
     license: bool,
@@ -56,7 +61,11 @@ pub fn process_args() -> Result<(), Box<dyn std::error::Error>> {
 
     let phi = construct_phi(&phi_ext, n);
 
-    plot_phi_into_file(phi, &cli.output)
+    if !cli.skip_plot {
+        plot_phi_into_file(phi, &cli.output)?;
+    }
+
+    Ok(())
 }
 
 fn print_license() {
