@@ -1,11 +1,13 @@
 use std::f64::{consts::PI, INFINITY, NEG_INFINITY};
 
+use anyhow::Result;
+
 use ndarray::prelude::*;
 use ndarray_linalg::Solve;
 
 use plotters::prelude::*;
 
-pub fn plot_phi_into_file<F>(phi: F, filename: &str, sample_n: usize) -> Result<(), Box<dyn std::error::Error>> 
+pub fn plot_phi_into_file<F>(phi: F, filename: &str, sample_n: usize) -> Result<()> 
 where
     F: Fn(f64) -> f64
 {

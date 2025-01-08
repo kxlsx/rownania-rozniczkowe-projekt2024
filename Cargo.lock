@@ -527,6 +527,7 @@ dependencies = [
 name = "gpot"
 version = "0.0.1"
 dependencies = [
+ "anyhow",
  "clap",
  "ndarray",
  "ndarray-linalg",

@@ -1,9 +1,8 @@
+use anyhow::Result;
+
 use clap::Parser;
 
 use crate::phi::*;
-
-// TODO: nice error values for invalid filenames.
-// TODO: nicer matrix printing
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -52,7 +51,7 @@ struct Cli {
     license: bool,
 }
 
-pub fn process_args() -> Result<(), Box<dyn std::error::Error>> {
+pub fn process_args() -> Result<()> {
     let cli = Cli::parse();
 
     if cli.license {
