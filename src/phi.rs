@@ -88,7 +88,6 @@ pub fn phi_linear_matrix(n: usize, grav_const: f64) -> Array1<f64> {
 
         matrix[i - 1] =
             - 4. * PI * grav_const * linear_functional(|x| e(i, x, h), (x_i - h).max(1.), (x_i + h).min(2.))
-                + (e(i, x_i - h, h) - e(i, x_i + h, h)) / 3.
     }
     matrix
 }
@@ -108,9 +107,9 @@ pub fn construct_phi(phi_ext: &Array1<f64>, n: usize) -> impl Fn(f64) -> f64 + '
 fn e(k: usize, x: f64, h: f64) -> f64 {
     let x_k = k as f64 * h;
 
-    if x >= x_k - h && x <= x_k {
+    if x > x_k - h && x <= x_k {
         x / h - (k - 1) as f64
-    } else if x > x_k && x <= x_k + h {
+    } else if x > x_k && x < x_k + h {
         -x / h + (k + 1) as f64
     } else {
         0.
@@ -121,9 +120,9 @@ fn e(k: usize, x: f64, h: f64) -> f64 {
 fn de(k: usize, x: f64, h: f64) -> f64 {
     let x_k = k as f64 * h;
 
-    if x >= x_k - h && x <= x_k {
+    if x > x_k - h && x <= x_k {
         1. / h
-    } else if x > x_k && x <= x_k + h {
+    } else if x > x_k && x < x_k + h {
         -1. / h
     } else {
         0.
