@@ -1,0 +1,270 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[
+    a4paper,
+    left=15mm,
+    right=15mm,
+    top=30mm,
+    bottom=25mm,
+    headheight=25mm
+]{geometry}
+\usepackage{graphicx}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{wrapfig}
+\usepackage{layout}
+\usepackage{textcomp}
+\usepackage[center]{caption}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage[mathscr]{euscript}
+
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
+
+\renewcommand{\baselinestretch}{1.18}
+\renewcommand\thesubfigure{\roman{subfigure}}
+
+\pagestyle{fancy}
+\fancyhead[L]{
+    \includegraphics[scale=0.16]{./res/agh_logo_text_asym.jpg}
+}
+\fancyhead[R]{
+    Zadanie obiczeniowe - Potencjał grawitacyjny.
+    \\
+    Łukasz Dragon
+}
+
+\begin{document}
+\section{Opis problemu}
+Celem obliczeń jest znalezienie rozwiązania dla:
+\begin{equation}
+    \begin{split}
+        \frac{d^2 \Phi}{dx^2} &= 4\pi G \rho(x)
+        \\
+        &\Omega = (0; 3)
+        \\
+        &\Phi(0) = 5
+        \\
+        &\Phi(3) = 4
+        \\
+        \rho(x) = &
+        \begin{cases}
+            0 & x \in [0; 1] \\
+            1 & x \in (1; 2] \\
+            0 & x \in (2; 3]
+        \end{cases}
+    \end{split}
+\end{equation}
+korzystając z metody elementów skończonych.
+
+\section{Obliczenia}
+\subsection{Wyprowadzenie sformułowania wariacyjnego}
+Niech $V$ oznacza przestrzeń funkcji zerujących
+się na brzegach $\Omega$.
+Szukamy funkcji $\Phi$ spełniającej:
+\begin{equation}
+    \forall v \in V \quad \int_{\Omega}^{} \frac{d^2 \Phi}{dx^2}v dx 
+    = \int_{\Omega}^{} 4\pi G \rho v dx \quad (v(0) = 0, v(3) = 0)
+\end{equation}
+Przekształcając równanie:
+\begin{equation}
+    \begin{split}
+        \int_{0}^{3} \Phi''vdx = 4\pi G\int_{0}^{3}\rho vdx 
+        &\implies
+        \\
+        [\Phi'v]^3_0 - \int_{0}^{3} \Phi'v'dx = 4\pi G \int_{0}^{3}\rho vdx
+        &\implies
+        \\
+        (\Phi(3)'\underbrace{v(3)}_{=0} - \Phi(0)'\underbrace{v(0)}_{=0}) 
+        - \int_{0}^{3} \Phi'v'dx = 4\pi G \int_{0}^{3}\rho vdx
+        &\implies
+        \\
+        - \int_{0}^{3} \Phi'v'dx = 4\pi G \int_{0}^{3}\rho vdx
+    \end{split}
+\end{equation}
+
+Wprowadźmy podstawienie: $\Phi = w + \widetilde{\Phi}$, gdzie:
+$w(0) = 0, w(3) = 0$ oraz $\widetilde{\Phi}(0) = 5, \widetilde{\Phi}(3) = 4$.
+Wybierzmy $\widetilde{\Phi} = -\frac{1}{3}x + 5$.
+Podstawiając do równania:
+\begin{equation}
+    \begin{split}
+        -\int_{0}^{3} (w + \widetilde{\Phi})'v'dx = 4\pi G \int_{0}^{3}\rho v dx
+        &\implies
+        \\
+        -\int_{0}^{3}w'v'dx - \int_{0}^{3}\widetilde{\Phi}'v'dx = 4\pi G \int_{0}^{3}\rho v dx
+        &\implies
+        \\
+        -\int_{0}^{3}w'v'dx - \int_{0}^{3}(-\frac{1}{3}x + 5)'v'dx = 4\pi G \int_{0}^{3}\rho v dx
+        &\implies
+        \\
+        -\int_{0}^{3}w'v'dx + \frac{1}{3} \int_{0}^{3}v'dx = 4\pi G \int_{0}^{3}\rho v dx
+        &\implies
+        \\
+        -\int_{0}^{3}w'v'dx + \frac{1}{3} \underbrace{[v]^3_0}_{=0} = 4\pi G \int_{0}^{3}\rho v dx
+        &\implies
+        \\
+        -\int_{0}^{3}w'v'dx = 4\pi G \int_{0}^{3}\rho v dx
+    \end{split}
+\end{equation}
+Wprowadźmy oznaczenia $B(w, v) = -\int_{0}^{3}w'v'dx$ oraz
+$L(v) = 4\pi G \int_{0}^{3}\rho v dx$, gdzie $B(w, v)$ jest
+\textit{funkcjonałem biliniowym} i $L(v)$ 
+jest \textit{funkcjonałem liniowym}.
+
+Równanie możemy więc zapisać w postaci:
+\begin{equation}
+    B(w, v) = L(v)
+\end{equation}
+
+\subsection{Aproksymacja metodą elementów skończonych}
+Podzielmy przedział $[0; 3]$ na $n$ części równej długości:
+\begin{equation}
+    \begin{split}
+        h = \frac{3}{n}
+        \\
+        x_0 = 0, x_n = 3,  x_i = ih, 
+        \\
+        \implies
+        \\
+        x_{i - 1} = x_i - h, x_{i + 1} = x_i + h 
+    \end{split}
+\end{equation}
+
+Na ich podstawie wybierzmy funkcje bazowe:
+\begin{equation}
+    \begin{split}
+        \forall i = 1, 2, ... n - 1 \quad e_i(x) &= 
+        \begin{cases}
+            \frac{x - x_{i - 1}}{x_i - x_{i - 1}} & x \in (x_{i - 1}, x_i) \\
+            \frac{x_{i + 1} - x}{x_{i + 1} - x_i} & x \in [x_i, x_{i + 1}) \\
+            0 & \text{inaczej}
+        \end{cases}
+        \\
+        &= 
+        \begin{cases}
+            \frac{x}{h} - i + 1 & x \in (x_{i - 1}, x_i) \\
+            -\frac{x}{h} + i + 1 & x \in [x_i, x_{i + 1}) \\
+            0 & \text{inaczej}
+        \end{cases}
+        \\
+        \implies
+        \\
+        e'_i(x) &= 
+        \begin{cases}
+            \frac{1}{h} & x \in (x_{i - 1}, x_i) \\
+            -\frac{1}{h} & x \in [x_i, x_{i + 1}) \\
+            0 & \text{inaczej}
+        \end{cases}
+    \end{split}
+\end{equation}
+
+Rozważamy teraz problem przybliżony:
+\begin{equation}
+    \begin{split}
+        w(x) \approx w_h(x) = \sum_{i = 1}^{n - 1} w_i e_i(x)
+        \\
+        B(\sum_{i = 1}^{n - 1} w_i e_i, v) = L(v).
+    \end{split}
+\end{equation}
+
+Równanie musi być prawdziwe dla dowolnej funkcji testowej $v$,
+zatem możemy przyjąć:
+\begin{equation}
+    \forall i = 1, 2, ..., n - 1 \quad B(\sum_{j = 1}^{n - 1} w_j e_j, e_i) = L(e_i).
+\end{equation}
+
+Korzystając z faktu, że $B$ jest \textit{funkcjonałem biliniowym} otrzymujemy układ równań:
+\begin{equation}
+    \forall i = 1, 2, ..., n - 1 \quad \sum_{j = 1}^{n - 1} w_j B(e_j, e_i) = L(e_i).
+\end{equation}
+
+Zapiszmy otrzymany układ równań liniowych w postaci macierzowej:
+\begin{equation}
+    \begin{bmatrix}
+        B(e_1, e_1) & B(e_2, e_1) & \dots & B(e_{n - 1}, e_1) \\
+        B(e_1, e_2) & B(e_2, e_2) & \dots & B(e_{n - 1}, e_2) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        B(e_1, e_{n - 1}) & B(e_2, e_{n - 1}) & \dots & B(e_{n - 1}, e_{n - 1}) \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        w_1 \\ w_2 \\ \vdots \\ w_{n - 1}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        L(e_1) \\ L(e_2) \\ \vdots \\ L(e_{n - 1})
+    \end{bmatrix}
+\end{equation}
+
+Rozpiszmy teraz funkcjonały $B$ i $L$:
+\begin{equation}
+    \begin{split}
+        B(e_j, e_i) = \int_{0}^{3} e'_j e'_i dx = \int_{X_{i,j}} e'_j e'_i dx\\
+        \text{gdzie} \quad X_{i, j} = 
+        \begin{cases}
+            (x_{i - 1}, x_{i + 1}) & i = j \\
+            (x_i, x_j) & i = j - 1 \\
+            (x_j, x_i) & j = i - 1 \\
+            \emptyset & inaczej
+        \end{cases}
+    \end{split}
+\end{equation}
+\begin{equation}
+    L(e_i) = 4\pi G \int_{0}^{3}\rho e_i dx 
+    = 0 + 4\pi G \int_{1}^{2} e_i dx + 0
+    = 4\pi G \int_{max\{1, x_{i - 1}\}}^{min\{2, x_{i + 1}\}} e_i dx
+\end{equation}
+
+
+
+Dzięki otrzymanym wzorom dla $B$ i $L$ możemy zapisać nasze równanie
+macierzowe jako:
+\begin{equation}
+    \begin{bmatrix}
+        \int_{x_0}^{x_2} (e'_1)^2 dx & \int_{x_1}^{x_2} e'_2 e'_1 dx & 0 & \dots & 0 \\
+        \int_{x_1}^{x_2} e'_1 e'_2 dx & \int_{x_1}^{x_3} (e'_2)^2 dx & \int_{x_2}^{x_3} e'_3 e'_2 & \dots & 0\\
+        0 & \int_{x_2}^{x_3} e'_2 e'_3 dx & \int_{x_2}^{x_4} (e'_3)^2 dx & \dots & 0\\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \dots & \int_{x_{n - 2}}^{x_{n}} (e'_{n - 1})^2 dx
+    \end{bmatrix}
+    \begin{bmatrix}
+        w_1 \\ w_2 \\ w_3 \\ \vdots \\ w_{n - 1}
+    \end{bmatrix}
+    = 4 \pi G
+    \begin{bmatrix}
+        \int_{max\{1, x_0\}}^{min\{2, x_2\}} e_1 dx \\
+        \int_{max\{1, x_1\}}^{min\{2, x_3\}} e_2 dx \\
+        \int_{max\{1, x_2\}}^{min\{2, x_4\}} e_3 dx \\
+        \vdots \\
+        \int_{max\{1, x_{n - 2}\}}^{min\{2, x_n\}} e_{n - 1} dx \\
+    \end{bmatrix}
+\end{equation}
+
+Po rozwiązaniu równania jesteśmy w stanie otrzymać
+aproksymację szukanej przez nas funkcji $\Phi$:
+\begin{equation}
+    \Phi(x) \approx w_h + \widetilde{\Phi}
+    = -\frac{1}{3} x + 5 + \sum_{i = 1}^{n - 1} w_i e_i(x)
+\end{equation}
+
+\subsection{Kwadratura Gaussa}
+W celu aproksymacji wartości całki oznaczonej
+skorzystamy z kwadratury Gaussa o dwóch punktach.
+Wzór jest następujący:
+\begin{equation}
+    \int_{a}^{b} f(x) dx \approx
+    \frac{b - a}{2}[f(\frac{b - a}{2}\cdot \frac{1}{\sqrt{3}} + \frac{a + b}{2})
+    + f(\frac{b - a}{2}\cdot \frac{-1}{\sqrt{3}} + \frac{a + b}{2})]
+\end{equation}
+
+\end{document}
