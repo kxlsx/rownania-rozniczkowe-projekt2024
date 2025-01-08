@@ -10,18 +10,22 @@ Celem projektu bylo znalezienie rozwiązania
 dla równania różniczkowego opisującego
 potencjał grawitacyjny w jednym wymiarze:
 
-$$
-    {d^2 \Phi \over dx^2} = 4\pi G \rho(x)
-    \\ ~ \\
-    \Phi(0) = 5, \quad \Phi(3) = 4, \quad \Omega = (0; 3)
-    \\ ~ \\
-    \rho(x)=\left\{
+$$   
+    \begin{split}
+    {d^2 \Phi \over dx^2}&= 4\pi G \rho(x)
+    \\
+    &\Phi(0) = 5\\
+    &\Phi(3) = 4 \\
+    &\Omega = (0; 3) \\
+    \\
+    \rho(x)=&\left\lbrace
     \begin{array}{ll}
         0 & x \in [0; 1] \\
         1 & x \in (1; 2] \\
         0 & x \in (2; 3] \\ 
     \end{array} 
     \right.
+    \end{split}
 $$
 
 za pomocą metody elementów skończonych.
