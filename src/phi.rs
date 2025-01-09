@@ -44,28 +44,24 @@ pub fn phi_bilinear_matrix(n: usize) -> Array2<f64> {
     let mut matrix = Array2::<f64>::zeros((n - 1, n - 1));
     let h: f64 = 3.0 / n as f64;
 
-    let x_1 = h;
     let de_1 = |x| de(1, x, h);
-    let de_2 = |x| de(2, x, h);
-    matrix[[0, 0]] = -bilinear_functional(de_1, de_1, 0., x_1 + h);
-    matrix[[0, 1]] = -bilinear_functional(de_1, de_2, x_1, x_1 + h);
-
-    for i in 2..n - 1 {
+    matrix[[0, 0]] = 
+        -bilinear_functional(de_1, de_1, 0., h)
+        -bilinear_functional(de_1, de_1, h, 2. * h);
+    for i in 2..n {
         let x_i = i as f64 * h;
+
         let de_i = |x| de(i, x, h);
-        let de_i_dec = |x| de(i - 1, x, h);
-        let de_i_inc = |x| de(i + 1, x, h);
+        let de_i_sub = |x| de(i - 1, x, h);
 
-        matrix[[i - 1, i - 1]] = -bilinear_functional(de_i, de_i, x_i - h, x_i + h);
-        matrix[[i - 1, i - 2]] = -bilinear_functional(de_i, de_i_dec, x_i - h, x_i);
-        matrix[[i - 1, i]] = -bilinear_functional(de_i, de_i_inc, x_i, x_i + h);
+        matrix[[i - 1, i - 1]] = 
+            -bilinear_functional(de_i, de_i, x_i - h, x_i)
+            -bilinear_functional(de_i, de_i, x_i, x_i + h);
+        matrix[[i - 2, i - 1]] =
+            -bilinear_functional(de_i_sub, de_i, x_i - h, x_i);
+        matrix[[i - 1, i - 2]] =
+            -bilinear_functional(de_i, de_i_sub, x_i - h, x_i);
     }
-
-    let x_n_dec = (n - 1) as f64 * h;
-    let de_n_dec = |x| de(n - 1, x, h);
-    let de_n_dec_dec = |x| de(n - 2, x, h);
-    matrix[[n - 2, n - 3]] = -bilinear_functional(de_n_dec, de_n_dec_dec, x_n_dec - h, x_n_dec);
-    matrix[[n - 2, n - 2]] = -bilinear_functional(de_n_dec, de_n_dec, x_n_dec - h, x_n_dec + h);
 
     matrix
 }
@@ -84,7 +80,11 @@ pub fn phi_linear_matrix(n: usize, grav_const: f64) -> Array1<f64> {
         }
 
         matrix[i - 1] =
-            4. * PI * grav_const * linear_functional(|x| e(i, x, h), (x_i - h).max(1.), (x_i + h).min(2.));
+            4. * PI * grav_const * (
+                linear_functional(|x| e(i, x, h), (x_i - h).max(1.), x_i)
+                + linear_functional(|x| e(i, x, h), x_i, (x_i + h).min(2.))
+            )
+
     }
     matrix
 }

@@ -206,23 +206,31 @@ Zapiszmy otrzymany układ równań liniowych w postaci macierzowej:
     \end{bmatrix}
 \end{equation}
 
-Rozpiszmy teraz funkcjonały $B$ i $L$:
+Rozpiszmy teraz funkcjonał $B$:
 \begin{equation}
     \begin{split}
-        B(e_j, e_i) = \int_{0}^{3} e'_j e'_i dx = \int_{X_{i,j}} e'_j e'_i dx\\
-        \text{gdzie} \quad X_{i, j} = 
+        &B(e_j, e_i) = -\int_{0}^{3} e'_j e'_i dx = -\int_{X_{i,j}} e'_j e'_i dx\\
+        &\text{gdzie} \quad X_{i, j} = 
         \begin{cases}
             (x_{i - 1}, x_{i + 1}) & i = j \\
-            (x_i, x_j) & i = j - 1 \\
-            (x_j, x_i) & j = i - 1 \\
+            (x_{j - 1}, x_j) & i = j - 1 \\
+            (x_{i - 1}, x_i) & j = i - 1 \\
             \emptyset & inaczej
-        \end{cases}
+        \end{cases} \\
+        &\text{zatem dla } i = j:\\
+        &B(e_j, e_i) = -\int_{x_{i - 1}}^{x_{i + 1}} e'_j e'_i dx 
+        = -\int_{x_{i - 1}}^{x_i} e'_j e'_i dx  - \int_{x_i}^{x_{i + 1}} e'_j e'_i dx 
     \end{split}
 \end{equation}
+
+oraz $L$:
 \begin{equation}
-    L(e_i) = 4\pi G \int_{0}^{3}\rho e_i dx 
-    = 0 + 4\pi G \int_{1}^{2} e_i dx + 0
-    = 4\pi G \int_{max\{1, x_{i - 1}\}}^{min\{2, x_{i + 1}\}} e_i dx
+    \begin{split}
+        L(e_i) &= 4\pi G \int_{0}^{3}\rho e_i dx 
+        = 0 + 4\pi G \int_{1}^{2} e_i dx + 0 
+        = 4\pi G \int_{max\{1, x_{i - 1}\}}^{min\{2, x_{i + 1}\}} e_i dx\\
+        &= 4\pi G (\int_{max\{1, x_{i - 1}\}}^{x_i} e_i dx + \int_{x_i}^{min\{2, x_{i + 1}\}} e_i dx)
+    \end{split}
 \end{equation}
 
 
