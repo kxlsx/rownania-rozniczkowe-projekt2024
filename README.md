@@ -32,7 +32,7 @@ za pomocą metody elementów skończonych.
 
 ## Rozwiązanie
 
-Wykonane przeze mnie obliczenia znajdują się w pliku [calc.pdf](https://github.com/kxlsx/rownania-rozniczkowe-projekt2024/blob/main/calc.pdf).
+Wykonane przeze mnie obliczenia znajdują się w pliku [calcs.pdf](https://github.com/kxlsx/rownania-rozniczkowe-projekt2024/blob/main/calcs.pdf).
 Implementacja algorytmu aproksymującego wartość $\Phi(x)$ została
 napisana w języku `Rust`. Przykładowy wygenerowany wykres znajduje
 się w pliku [res/plot.png](https://github.com/kxlsx/rownania-rozniczkowe-projekt2024/blob/main/res/plot.png)
